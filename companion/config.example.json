@@ -1,6 +1,6 @@
 {
   "client_id": "YOUR_SPOTIFY_CLIENT_ID",
-  "game_dir": "C:/Games/OctoWoW",
+  "game_dir": "C:/Jeux/OctoWoW",
   "lyrics_offset_ms": 0,
   "lyrics_providers": [
     "Musixmatch",
@@ -11,5 +11,5 @@
   "lyrics_search_timeout_seconds": 18,
   "lyrics_cache_days": 90,
   "lyrics_negative_cache_hours": 6,
-  "language": "en"
+  "language": "fr"
 }

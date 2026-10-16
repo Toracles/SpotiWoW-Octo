@@ -1,3 +1,7 @@
+## 1.4.6
+- The bridge checks Spotify every 10 seconds to refresh track metadata.
+- Long track titles scroll in the add-on interface so the full title can be read.
+
 ## 1.4.5
 - When the WoW client closes, the bridge stops and SpotiWoW-Octo also exits the system tray automatically.
 - Added a log entry for this automatic shutdown.

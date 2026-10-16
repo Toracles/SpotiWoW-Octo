@@ -1,4 +1,4 @@
-# SpotiWoW-Octo v1.4.5 — US English
+# SpotiWoW-Octo v1.4.6 — US English
 
 SpotiWoW-Octo connects Spotify to Turtle WoW / OctoWoW through the SuperWoW file bridge. This package uses the US English interface and in-game messages.
 

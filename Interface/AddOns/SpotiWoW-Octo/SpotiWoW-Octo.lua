@@ -167,13 +167,41 @@ MakeButton("+10", T("forward_10"), 32, 142, CMD.fwd)
 MakeButton("V-", T("volume_down"), 28, 180, CMD.voldown)
 MakeButton("V+", T("volume_up"), 28, 210, CMD.volup)
 
+-- Character-based marquee: safe for the legacy WoW 1.12 client, without
+-- relying on newer FontString clipping APIs that may not exist in this client.
+local TITLE_VISIBLE_CHARS = 27
+local TITLE_SCROLL_STEP = 0.28
+local titleScrollSource = nil
+local titleScrollOffset = 1
+local titleScrollElapsed = 0
+
+local function RefreshTitleText()
+    if not titleScrollSource or titleScrollSource == "" then
+        titleText:SetText(T("waiting"))
+        return
+    end
+    if strlen(titleScrollSource) <= TITLE_VISIBLE_CHARS then
+        titleText:SetText(titleScrollSource)
+        return
+    end
+    local cycle = titleScrollSource .. "     "
+    local cycleLength = strlen(cycle)
+    local display = strsub(cycle, titleScrollOffset, titleScrollOffset + TITLE_VISIBLE_CHARS - 1)
+    if strlen(display) < TITLE_VISIBLE_CHARS then
+        display = display .. strsub(cycle, 1, TITLE_VISIBLE_CHARS - strlen(display))
+    end
+    titleText:SetText(display)
+    titleScrollOffset = titleScrollOffset + 1
+    if titleScrollOffset > cycleLength then titleScrollOffset = 1 end
+end
+
 local function RefreshUI()
     local np = NowPlaying()
-    if not np then
-        titleText:SetText(T("waiting"))
-    else
-        if strlen(np) > 34 then np = strsub(np, 1, 33) .. "..." end
-        titleText:SetText(np)
+    if np ~= titleScrollSource then
+        titleScrollSource = np or ""
+        titleScrollOffset = 1
+        titleScrollElapsed = 0
+        RefreshTitleText()
     end
     if playing then playBtn:SetText("II") else playBtn:SetText(">") end
     if volume >= 0 then volText:SetText(T("volume_label") .. " " .. volume) else volText:SetText(T("volume_label") .. " --") end
@@ -312,10 +340,18 @@ end
 
 local statePoller = CreateFrame("Frame", "SpotifyNowStatePoller")
 statePoller:SetScript("OnUpdate", function()
-    statePollElapsed = statePollElapsed + (arg1 or 0)
+    local elapsed = arg1 or 0
+    statePollElapsed = statePollElapsed + elapsed
     if statePollElapsed >= 0.25 then
         statePollElapsed = 0
         PollBridgeState()
+    end
+    if titleScrollSource and strlen(titleScrollSource) > TITLE_VISIBLE_CHARS then
+        titleScrollElapsed = titleScrollElapsed + elapsed
+        if titleScrollElapsed >= TITLE_SCROLL_STEP then
+            titleScrollElapsed = titleScrollElapsed - TITLE_SCROLL_STEP
+            RefreshTitleText()
+        end
     end
 end)
 

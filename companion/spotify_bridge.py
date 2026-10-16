@@ -565,7 +565,9 @@ def poll_loop():
                 S["playing"] = False
                 S["stamp"] = time.time()
                 publish_state()
-        wake.wait(2)
+        # Refresh Spotify's current-track metadata every 10 seconds. Addon file
+        # synchronization remains independent and can still react to commands.
+        wake.wait(10)
         wake.clear()
 
 

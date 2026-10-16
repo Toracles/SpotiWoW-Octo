@@ -1,3 +1,7 @@
+## 1.4.6
+- Le bridge interroge Spotify toutes les 10 secondes pour actualiser les métadonnées du morceau.
+- Le titre défile dans l’interface de l’addon lorsqu’il est trop long, afin de pouvoir le lire en entier.
+
 ## 1.4.5
 - À la fermeture du client WoW, le bridge s’arrête et l’application SpotiWoW-Octo quitte aussi automatiquement la zone de notification.
 - Ajout d’une entrée de journal pour cette fermeture automatique.
