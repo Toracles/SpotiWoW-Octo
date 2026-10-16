@@ -9,6 +9,7 @@ A Spotify companion for Turtle WoW / OctoWoW clients based on 1.12.1 with SuperW
 
 ## For players
 Use the latest GitHub Release and download `SpotiWoW-Octo-Setup.exe`. The installer asks for the add-on language, game folder and Spotify Client ID, then downloads the matching release bundle.
+/spn help for all commands.
 
 ## For maintainers
 The shared Lua behavior is in `Interface/AddOns/SpotiWoW-Octo/SpotiWoW-Octo.lua`. French locale and metadata are in that add-on folder. US English locale and metadata are under `variants/US`.
