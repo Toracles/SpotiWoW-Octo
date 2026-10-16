@@ -1,5 +1,10 @@
 # Journal des modifications
 
+## v1.4.3
+- Correction de l’arrêt automatique du bridge : le lanceur surveille désormais le processus réel `WoW.exe`, plutôt que tous les exécutables présents dans le dossier du jeu. Cela évite qu’un processus auxiliaire maintenu ouvert empêche l’arrêt après Alt+F4.
+- Ajout de journaux de diagnostic pour le suivi du PID client et la fermeture de la session.
+
+
 ## v1.4.2
 - Correction du plantage de l’installateur à la fin de l’installation : le sélecteur de langue ne rentre plus en conflit avec le paramètre `{language}` du message de confirmation.
 

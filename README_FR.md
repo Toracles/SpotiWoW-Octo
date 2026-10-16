@@ -1,4 +1,4 @@
-# SpotiWoW-Octo v1.4.2 — Français
+# SpotiWoW-Octo v1.4.3 — Français
 
 SpotiWoW-Octo relie Spotify à Turtle WoW / OctoWoW via le bridge de fichiers SuperWoW. Cette version utilise l’interface et les messages en français.
 
@@ -23,6 +23,7 @@ L’installateur ne demande jamais de Client Secret et ne télécharge pas Turtl
 - Mini-lecteur et contrôles Spotify.
 - Recherche de paroles horodatées multi-sources et cache local.
 - Lanceur de zone de notification Windows sans console CMD visible.
+- Arrêt automatique du bridge lorsque le processus du client `WoW.exe` se ferme, y compris avec Alt+F4.
 
 Les paroles elles-mêmes restent envoyées dans le canal choisi si cette option est activée. Les noms techniques `SpotifyNowDB`, `SpotifyNowState.txt` et `SpotifyNowCommand.txt` sont conservés pour la compatibilité.
 

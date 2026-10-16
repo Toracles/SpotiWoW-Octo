@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.3
+- Fixed automatic bridge shutdown by monitoring the actual `WoW.exe` client instead of every executable in the game folder. This prevents a leftover helper process from keeping the bridge running after Alt+F4.
+- Added diagnostic logging for the tracked client PID and session closure.
+
+
 ## v1.4.2
 - Fixed the setup installer crash when formatting the completion message: the language selector no longer conflicts with the template’s `{language}` placeholder.
 

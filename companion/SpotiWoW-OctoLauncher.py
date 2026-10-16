@@ -20,6 +20,10 @@ from PIL import Image
 APP_NAME = "SpotiWoW-Octo"
 DEFAULT_GAME_DIR = Path(r"C:\Jeux\OctoWoW")
 VANILLAFIXES_NAME = "VanillaFixes.exe"
+# VanillaFixes is a launcher/injector. The actual Turtle WoW client it starts is WoW.exe.
+# Watching every executable in the game directory can accidentally track helpers that
+# stay alive after the player presses Alt+F4, leaving the bridge running indefinitely.
+GAME_CLIENT_EXE_NAMES = {"wow.exe"}
 BRIDGE_NAME = "spotify_bridge.py"
 CONFIG_NAME = "config.json"
 LOG_DIR_NAME = "logs"
@@ -134,12 +138,22 @@ def validate_installation() -> tuple[Path, Path]:
 
 
 def process_is_inside_game(exe: str | None) -> bool:
+    """Return True only for the actual WoW client process.
+
+    VanillaFixes.exe is a bootstrapper/injector, while helper executables in the
+    same folder may stay alive after the game closes. Monitoring just WoW.exe
+    makes Alt+F4 and normal exit reliably end the session watcher.
+    """
     if not exe:
         return False
     try:
+        # The launcher invokes VanillaFixes.exe without custom-executable arguments,
+        # so VanillaFixes starts the standard WoW.exe in GAME_DIR.
+        if Path(exe).name.casefold() not in GAME_CLIENT_EXE_NAMES:
+            return False
         root = os.path.normcase(os.path.abspath(str(GAME_DIR))).rstrip("\\/")
         path = os.path.normcase(os.path.abspath(exe))
-        return path.startswith(root + os.sep) and Path(path).name.casefold() != VANILLAFIXES_NAME.casefold()
+        return path.startswith(root + os.sep)
     except (OSError, ValueError):
         return False
 
@@ -209,6 +223,15 @@ class SpotiWoWController:
                 ),
             ),
         )
+
+    def _write_session_log(self, message: str) -> None:
+        """Write session-monitor events to the launcher log for troubleshooting."""
+        try:
+            self._log_dir.mkdir(parents=True, exist_ok=True)
+            with (self._log_dir / "launcher.log").open("a", encoding="utf-8") as stream:
+                stream.write(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}\n")
+        except OSError:
+            pass
 
     def _write_error_log(self, label: str, exc: BaseException) -> Path | None:
         """Write detailed errors to disk because the frozen app has no console."""
@@ -394,6 +417,9 @@ class SpotiWoWController:
         self._log_dir.mkdir(parents=True, exist_ok=True)
         original = game_process_snapshot()
         initial_pids = {row["pid"] for row in original}
+        self._write_session_log(
+            "Initial WoW client snapshot: " + (", ".join(f"pid={row['pid']} exe={row['exe']}" for row in original) if original else "no WoW.exe process found")
+        )
         self.start_bridge()
 
         tracked_pids = set(initial_pids)
@@ -424,7 +450,7 @@ class SpotiWoWController:
 
         tracked_pids.update(row["pid"] for row in candidates)
         first = candidates[0]
-        self.notify(tr(f"Client détecté : {first['name']}. Ferme le jeu normalement pour arrêter le bridge automatiquement.", f"Game client detected: {first['name']}. Close the game normally to stop the bridge automatically."))
+        self.notify(tr(f"Client détecté : {first['name']}. Ferme le jeu ou utilise Alt+F4 pour arrêter automatiquement le bridge.", f"Game client detected: {first['name']}. Close the game or press Alt+F4 to stop the bridge automatically."))
 
         while not self._quitting.is_set():
             current = {row["pid"] for row in game_process_snapshot()}
