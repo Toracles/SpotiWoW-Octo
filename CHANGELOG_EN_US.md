@@ -1,4 +1,12 @@
+## 1.4.5
+- When the WoW client closes, the bridge stops and SpotiWoW-Octo also exits the system tray automatically.
+- Added a log entry for this automatic shutdown.
+
 # Changelog
+
+## v1.4.4
+- Removed the three retired root-level maintainer guides and their obsolete README links. `.gitignore` now prevents them from being reintroduced accidentally.
+- Retains the v1.4.3 fix that monitors the actual `WoW.exe` process to stop the bridge after Alt+F4.
 
 ## v1.4.3
 - Fixed automatic bridge shutdown by monitoring the actual `WoW.exe` client instead of every executable in the game folder. This prevents a leftover helper process from keeping the bridge running after Alt+F4.

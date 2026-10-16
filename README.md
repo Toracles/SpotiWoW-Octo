@@ -1,17 +1,14 @@
-# SpotiWoW-Octo v1.4.3
+# SpotiWoW-Octo v1.4.5
 
 **Author: CloudNine_Ex**
 
 A Spotify companion for Turtle WoW / OctoWoW clients based on 1.12.1 with SuperWoW. The project ships both French (FR) and US English add-on variants.
 
-- French guide: `INSTALLER_GITHUB_GUIDE_FR.md`
-- US English guide: `INSTALLER_GITHUB_GUIDE_EN_US.md`
 - French end-user readme: `README_FR.md`
 - US English end-user readme: `README_EN_US.md`
 
 ## For players
 Use the latest GitHub Release and download `SpotiWoW-Octo-Setup.exe`. The installer asks for the add-on language, game folder and Spotify Client ID, then downloads the matching release bundle.
-"/spm help" for all the commands available.
 
 ## For maintainers
 The shared Lua behavior is in `Interface/AddOns/SpotiWoW-Octo/SpotiWoW-Octo.lua`. French locale and metadata are in that add-on folder. US English locale and metadata are under `variants/US`. Publishing a GitHub Release triggers `.github/workflows/release.yml` to build the tray launcher, installer, and both language bundles.

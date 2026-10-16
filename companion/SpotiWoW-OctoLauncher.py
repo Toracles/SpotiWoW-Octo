@@ -455,8 +455,18 @@ class SpotiWoWController:
         while not self._quitting.is_set():
             current = {row["pid"] for row in game_process_snapshot()}
             if not (tracked_pids & current):
+                # The user asked for the tray app itself to exit after WoW closes,
+                # not merely for the bridge child process to stop.
+                self._write_session_log("Tracked WoW client closed; stopping bridge and quitting tray app.")
                 self.stop_bridge(show_notification=False)
-                self.notify(tr("Client fermé : bridge arrêté automatiquement.", "Game client closed: bridge stopped automatically."))
+                self.notify(tr(
+                    "Client fermé : bridge arrêté. Fermeture de SpotiWoW-Octo.",
+                    "Game client closed: bridge stopped. Quitting SpotiWoW-Octo.",
+                ))
+                # Give Windows a moment to display the notification before removing
+                # the tray icon and exiting the launcher.
+                time.sleep(1.25)
+                self.quit()
                 return
             time.sleep(1.0)
 

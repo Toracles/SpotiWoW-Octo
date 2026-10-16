@@ -1,4 +1,4 @@
-# SpotiWoW-Octo v1.4.3 — Français
+# SpotiWoW-Octo v1.4.5 — Français
 
 SpotiWoW-Octo relie Spotify à Turtle WoW / OctoWoW via le bridge de fichiers SuperWoW. Cette version utilise l’interface et les messages en français.
 
@@ -30,6 +30,5 @@ Les paroles elles-mêmes restent envoyées dans le canal choisi si cette option 
 ## Dépannage
 - Journaux : `logs/bridge.log` et `logs/launcher.log` dans le dossier de l’application compagnon.
 - Si aucun dossier n’est détecté, sélectionne manuellement celui qui contient `VanillaFixes.exe`.
-- Consulte `INSTALLER_GITHUB_GUIDE_FR.md` pour les instructions du mainteneur et de publication GitHub.
 
 Pour une mise à jour de l’addon uniquement, télécharge `SpotiWoW-Octo-Addon-FR.zip` depuis les Releases. La version française affiche les messages système en français.

@@ -1,4 +1,4 @@
-# SpotiWoW-Octo v1.4.3 — US English
+# SpotiWoW-Octo v1.4.5 — US English
 
 SpotiWoW-Octo connects Spotify to Turtle WoW / OctoWoW through the SuperWoW file bridge. This package uses the US English interface and in-game messages.
 
@@ -30,6 +30,5 @@ Lyrics themselves are still sent to the selected channel when that feature is en
 ## Troubleshooting
 - Logs: `logs/bridge.log` and `logs/launcher.log` in the companion app folder.
 - If auto-detection fails, manually choose the folder that contains `VanillaFixes.exe`.
-- See `INSTALLER_GITHUB_GUIDE_EN_US.md` for maintainer and GitHub release instructions.
 
 For an add-on-only update, download `SpotiWoW-Octo-Addon-US.zip` from Releases. The US English version displays system messages in English.

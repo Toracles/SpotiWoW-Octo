@@ -1,4 +1,12 @@
+## 1.4.5
+- À la fermeture du client WoW, le bridge s’arrête et l’application SpotiWoW-Octo quitte aussi automatiquement la zone de notification.
+- Ajout d’une entrée de journal pour cette fermeture automatique.
+
 # Journal des modifications
+
+## v1.4.4
+- Retrait des trois anciens guides de maintenance de la racine du dépôt et suppression des liens obsolètes dans les README. Les règles `.gitignore` empêchent leur réapparition accidentelle.
+- Conserve le correctif v1.4.3 de surveillance du vrai processus `WoW.exe` pour arrêter le bridge après Alt+F4.
 
 ## v1.4.3
 - Correction de l’arrêt automatique du bridge : le lanceur surveille désormais le processus réel `WoW.exe`, plutôt que tous les exécutables présents dans le dossier du jeu. Cela évite qu’un processus auxiliaire maintenu ouvert empêche l’arrêt après Alt+F4.
