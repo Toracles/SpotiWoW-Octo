@@ -159,6 +159,7 @@ def process_is_inside_game(exe: str | None) -> bool:
 
 
 def game_process_snapshot():
+    """Find WoW clients launched from the configured game directory."""
     found = []
     for proc in psutil.process_iter(["pid", "name", "exe", "create_time"]):
         try:
@@ -173,6 +174,25 @@ def game_process_snapshot():
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess, OSError):
             continue
     return sorted(found, key=lambda row: row["create_time"])
+
+
+def tracked_game_pids_alive(pids: set[int]) -> set[int]:
+    """Check tracked PIDs directly instead of re-filtering their executable paths.
+
+    Windows can temporarily deny access to a process's executable path. If that
+    happens, a path-based snapshot can incorrectly make the session monitor lose
+    sight of a still-running client. Once a tracked PID is gone (or is no longer
+    WoW.exe), the launcher can safely close its tray session.
+    """
+    alive = set()
+    for pid in pids:
+        try:
+            proc = psutil.Process(pid)
+            if proc.is_running() and proc.name().casefold() == "wow.exe":
+                alive.add(pid)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess, OSError):
+            continue
+    return alive
 
 
 class SpotiWoWController:
@@ -410,8 +430,9 @@ class SpotiWoWController:
         try:
             if self.icon is not None:
                 self.icon.stop()
-        except Exception:
-            pass
+                self._write_session_log("Tray icon stop requested.")
+        except Exception as exc:
+            self._write_error_log("Could not stop tray icon", exc)
 
     def _launch_session(self):
         self._log_dir.mkdir(parents=True, exist_ok=True)
@@ -453,8 +474,8 @@ class SpotiWoWController:
         self.notify(tr(f"Client détecté : {first['name']}. Ferme le jeu ou utilise Alt+F4 pour arrêter automatiquement le bridge.", f"Game client detected: {first['name']}. Close the game or press Alt+F4 to stop the bridge automatically."))
 
         while not self._quitting.is_set():
-            current = {row["pid"] for row in game_process_snapshot()}
-            if not (tracked_pids & current):
+            current = tracked_game_pids_alive(tracked_pids)
+            if not current:
                 # The user asked for the tray app itself to exit after WoW closes,
                 # not merely for the bridge child process to stop.
                 self._write_session_log("Tracked WoW client closed; stopping bridge and quitting tray app.")
