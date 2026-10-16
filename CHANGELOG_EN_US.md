@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.2
+- Fixed the setup installer crash when formatting the completion message: the language selector no longer conflicts with the template’s `{language}` placeholder.
+
 ## v1.4.1
 - Fixed the GitHub Actions release workflow by passing absolute icon and script paths to PyInstaller, preventing it from looking for the icon under `build/launcher`.
 - Updated GitHub Actions to Node.js 24-compatible major versions to address the Node.js 20 deprecation warning.

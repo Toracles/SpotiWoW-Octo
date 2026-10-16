@@ -116,8 +116,13 @@ TEXT = {
 }
 
 
-def t(language: str, key: str, **kwargs) -> str:
-    template = TEXT.get(language, TEXT["fr"]).get(key, key)
+def t(lang_code: str, key: str, **kwargs) -> str:
+    """Translate a UI string; keep lang_code distinct from template placeholders.
+
+    Some templates legitimately use a {language} placeholder, so the selector
+    parameter must not itself be named `language`.
+    """
+    template = TEXT.get(lang_code, TEXT["fr"]).get(key, key)
     return template.format(**kwargs) if kwargs else template
 
 

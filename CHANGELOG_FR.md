@@ -1,5 +1,8 @@
 # Journal des modifications
 
+## v1.4.2
+- Correction du plantage de l’installateur à la fin de l’installation : le sélecteur de langue ne rentre plus en conflit avec le paramètre `{language}` du message de confirmation.
+
 ## v1.4.1
 - Correction du workflow GitHub Actions : les chemins des icônes et scripts transmis à PyInstaller sont désormais absolus, évitant une recherche dans `build/launcher` au lieu du dossier source.
 - Mise à jour des actions GitHub vers des versions utilisant Node.js 24 pour éliminer l’avertissement de dépréciation de Node.js 20.
