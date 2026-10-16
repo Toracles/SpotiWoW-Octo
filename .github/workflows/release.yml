@@ -12,10 +12,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python for packaging
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
@@ -23,14 +23,33 @@ jobs:
         run: python -m pip install --upgrade pyinstaller pystray pillow psutil "syncedlyrics==1.0.1"
 
       - name: Build hidden-console runtime launcher
-        run: >-
-          python -m PyInstaller --clean --noconfirm --onefile --windowed
-          --name SpotiWoW-Octo
-          --icon companion/SpotiWoW-Octo.ico
-          --collect-all syncedlyrics --collect-all pystray
-          --collect-all psutil --collect-all PIL
-          --distpath dist --workpath build/launcher --specpath build/launcher
-          companion/SpotiWoW-OctoLauncher.py
+        shell: pwsh
+        run: |
+          # PyInstaller stores icon paths in the .spec file. Because --specpath is
+          # build/launcher, relative icon paths are later resolved against that folder.
+          # Use absolute paths for the icon and entry-point to avoid FileNotFoundError.
+          $root = $env:GITHUB_WORKSPACE
+          $iconPath = Join-Path $root "companion/SpotiWoW-Octo.ico"
+          $scriptPath = Join-Path $root "companion/SpotiWoW-OctoLauncher.py"
+          $distPath = Join-Path $root "dist"
+          $workPath = Join-Path $root "build/launcher"
+
+          if (-not (Test-Path -LiteralPath $iconPath -PathType Leaf)) {
+            throw "Launcher icon not found: $iconPath"
+          }
+          if (-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)) {
+            throw "Launcher source not found: $scriptPath"
+          }
+
+          New-Item -ItemType Directory -Force -Path $distPath | Out-Null
+          python -m PyInstaller --clean --noconfirm --onefile --windowed `
+            --name SpotiWoW-Octo `
+            --icon "$iconPath" `
+            --collect-all syncedlyrics --collect-all pystray `
+            --collect-all psutil --collect-all PIL `
+            --distpath "$distPath" --workpath "$workPath" --specpath "$workPath" `
+            "$scriptPath"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Assemble French and US portable runtime bundles
         shell: pwsh
@@ -80,17 +99,33 @@ jobs:
       - name: Build the beginner-friendly setup EXE
         shell: pwsh
         run: |
-          Set-Content -Path "installer/repo.txt" -Value "${{ github.repository }}" -NoNewline
+          $root = $env:GITHUB_WORKSPACE
+          $repoPath = Join-Path $root "installer/repo.txt"
+          $iconPath = Join-Path $root "installer/SpotiWoW-Octo.ico"
+          $scriptPath = Join-Path $root "installer/SpotiWoW-OctoSetup.py"
+          $distPath = Join-Path $root "dist"
+          $workPath = Join-Path $root "build/setup"
+
+          Set-Content -LiteralPath $repoPath -Value "${{ github.repository }}" -NoNewline
+          if (-not (Test-Path -LiteralPath $iconPath -PathType Leaf)) {
+            throw "Setup icon not found: $iconPath"
+          }
+          if (-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)) {
+            throw "Setup source not found: $scriptPath"
+          }
+
+          New-Item -ItemType Directory -Force -Path $distPath | Out-Null
           python -m PyInstaller --clean --noconfirm --onefile --windowed `
             --name SpotiWoW-Octo-Setup `
-            --icon installer/SpotiWoW-Octo.ico `
-            --add-data "installer/repo.txt;." `
-            --add-data "installer/SpotiWoW-Octo.ico;." `
-            --distpath dist --workpath build/setup --specpath build/setup `
-            installer/SpotiWoW-OctoSetup.py
+            --icon "$iconPath" `
+            --add-data "$repoPath;." `
+            --add-data "$iconPath;." `
+            --distpath "$distPath" --workpath "$workPath" --specpath "$workPath" `
+            "$scriptPath"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Attach installer, portable packages, and add-on-only zips to the GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             dist/SpotiWoW-Octo-Setup.exe
